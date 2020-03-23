@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>
+<html lang="en" ng-app="myApp" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>
+<html lang="en" ng-app="myApp" class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>
+<html lang="en" ng-app="myApp" class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html lang="en" ng-app="myApp" class="no-js"> <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>My AngularJS App</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="lib/html5-boilerplate/dist/css/normalize.css">
+    <link rel="stylesheet" href="lib/html5-boilerplate/dist/css/main.css">
+    <link rel="stylesheet" href="app.css">
+    <script src="lib/html5-boilerplate/dist/js/vendor/modernizr-2.8.3.min.js"></script>
+    <!-- Leaflet -->
+    <!--<link href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" rel="stylesheet" />-->
+    <!--<script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>-->
+
+    <!--<link rel="stylesheet" href="https://npmcdn.com/leaflet@0.7.7/dist/leaflet.css"/>-->
+    <!--<script src="https://npmcdn.com/leaflet@0.7.7/dist/leaflet.js"></script>-->
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+          integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+          crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+            integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+            crossorigin=""></script>
+
+    <script
+            src="https://code.jquery.com/jquery-3.4.1.min.js"
+            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+            crossorigin="anonymous"></script>
+
+    <script src='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.css' rel='stylesheet'/>
+
+</head>
+<style>
+
+    #mapid {
+        height: 800px;
+    }
+
+    /*.custom-popup, .leaflet-popup-content-wrapper {*/
+    /*background: #2c3e50;*/
+    /*color: #fff;*/
+    /*font-size: 12px;*/
+    /*line-height: 10px;*/
+    /*border-radius: 10px;*/
+    /*}*/
+
+    /*.custom-popup, .leaflet-popup-content-wrapper a {*/
+    /*color: rgba(255, 255, 255, 0.1);*/
+    /*}*/
+
+    /*.custom-popup, .leaflet-popup-tip-container {*/
+    /*width: 30px;*/
+    /*height: 15px;*/
+    /*}*/
+
+    /*.custom-popup, .leaflet-popup-tip {*/
+    /*background: transparent;*/
+    /*border: none;*/
+    /*box-shadow: none;*/
+    /*}*/
+
+    /*.leaflet-popup-close-button {*/
+    /*display: none;*/
+    /*}*/
+
+    /*.leaflet-label-overlay {*/
+    /*line-height: 0px;*/
+    /*margin-top: 9px;*/
+    /*position: absolute;*/
+    /*}*/
+
+    /*.countryLabel {*/
+    /*background: rgba(255, 255, 255, 0);*/
+    /*border: 0;*/
+    /*border-radius: 0px;*/
+    /*box-shadow: 0 0px 0px;*/
+    /*}*/
+
+    /* custom tooptip*/
+    .myCSSClass {
+        background: green;
+        border: 2px solid cyan
+    }
+
+    .leaflet-tooltip-left.myCSSClass::before {
+        border-left-color: cyan;
+    }
+
+    .leaflet-tooltip-right.myCSSClass::before {
+        border-right-color: cyan;
+    }
+
+</style>
+<body>
+<ul class="menu">
+    <li><a href="#!/view1">view1</a></li>
+    <li><a href="#!/view2">view2</a></li>
+</ul>
+
+<!--[if lt IE 7]>
+<p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade
+    your browser</a> to improve your experience.</p>
+<![endif]-->
+
+<div id="mapid"></div>
+
+<div ng-view></div>
+
+<div>AngularJS seed app: v<span app-version></span></div>
+
+<!-- In production use:
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/x.x.x/angular.min.js"></script>
+-->
+<script src="lib/angular/angular.js"></script>
+<script src="lib/angular-route/angular-route.js"></script>
+<script src="app.js"></script>
+<script src="view1/view1.js"></script>
+<script src="view2/view2.js"></script>
+<script src="core/version/version.js"></script>
+<script src="core/version/version-directive.js"></script>
+<script src="core/version/interpolate-filter.js"></script>
+</body>
+<script type="text/javascript">
+
+
+    mapboxgl.accessToken = 'pk.eyJ1Ijoicjk5NTIxMzIwIiwiYSI6ImNrN3p1b2ljZDA5aGYzZnBnaXoxMWZoNmMifQ.-brOJZNzKPb-fohs8-4FJQ';
+
+    // var map = new mapboxgl.Map({
+    //     container: 'map',
+    //     style: 'mapbox://styles/mapbox/streets-v11'
+    // });
+
+    // 建立 Leaflet 地圖
+    var map = L.map('mapid');
+
+    // // 設定經緯度座標
+    // map.setView(new L.LatLng(22.992, 120.239), 11); // Tainan
+    map.setView(new L.LatLng(35.6619008, 139.4525704), 9); // Tokyo
+
+    // var popup = L.popup({
+    //     closeButton: true,
+    //     autoClose: true,
+    //     className: "custom-popup" // classname for the popup acting like a splash screen
+    // })
+    //     .setLatLng(map.getBounds().getCenter())
+    //     .setContent('<p>Some Disclaimer Text.</p>')
+    //     .openOn(map);
+
+    // map._createPane("pane250").style.zIndex = 250; // between tiles and overlays
+    // map._createPane("pane450").style.zIndex = 450; // between tiles and overlays
+
+    // // 設定圖資來源
+    // var osmUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+    // var osmUrl = "https://api.mapbox.com/v4/mapbox.satellite/1/0/0@2x.jpg90?access_token=pk.eyJ1Ijoicjk5NTIxMzIwIiwiYSI6ImNrN3p1b2ljZDA5aGYzZnBnaXoxMWZoNmMifQ.-brOJZNzKPb-fohs8-4FJQ";
+    // var osmUrl = "https://api.mapbox.com/styles/v1/mapbox/emerald-v8/tiles/{z}/{x}/{y}?access_token=pk.eyJ1Ijoicjk5NTIxMzIwIiwiYSI6ImNrN3p1b2ljZDA5aGYzZnBnaXoxMWZoNmMifQ.-brOJZNzKPb-fohs8-4FJQ";
+    var osmUrl = "https://api.mapbox.com/styles/v1/mapbox/dark-v10/tiles/{z}/{x}/{y}?access_token=pk.eyJ1Ijoicjk5NTIxMzIwIiwiYSI6ImNrN3p1b2ljZDA5aGYzZnBnaXoxMWZoNmMifQ.-brOJZNzKPb-fohs8-4FJQ";
+    var osm = new L.TileLayer(osmUrl, {
+        minZoom: 8,
+        attribution: '<a href="https://www.openstreetmap.org/">OSM</a>',
+        maxZoom: 16
+    });
+    map.addLayer(osm);
+
+    var onMouseStyle = {
+        "weight": 15,
+        color: 'red'   //or whatever style you wish to use;
+    }
+
+    function onEachFeature_Single(feature, layer) {
+        // does this feature have a property named popupContent?
+        console.log(feature)
+
+        if (feature.properties && feature.properties.title) {
+            layer.bindPopup(feature.properties.title);
+            layer.on('mouseover', function (e) {
+                // console.log("=== OVER ===")
+                // console.log(this)
+                // this.openPopup();
+
+
+                e.target.setStyle(onMouseStyle);
+
+                // var popup = e.target._popup;
+                // if (popup) {
+                //     popup.setLatLng(e.latlng).openOn(map);
+                // }
+            });
+            layer.on('mouseout', function (e) {
+                // console.log("=== OUT ===")
+                // console.log(this)
+                e.target.setStyle(singleStyle);
+            });
+
+            layer.bindTooltip(feature.properties.title);
+
+        }
+    }
+
+    function onEachFeature_Miniunits(feature, layer) {
+        // does this feature have a property named popupContent?
+        console.log(feature)
+
+        if (feature.properties && feature.properties.SIKUCHOSON) {
+            layer.bindPopup(feature.properties.SIKUCHOSON);
+            layer.on('mouseover', function (e) {
+                // console.log("=== OVER ===")
+                // console.log(this)
+                // this.openPopup();
+
+
+                e.target.setStyle(onMouseStyle);
+
+                // var popup = e.target._popup;
+                // if (popup) {
+                //     popup.setLatLng(e.latlng).openOn(map);
+                // }
+            });
+            layer.on('mouseout', function (e) {
+                // console.log("=== OUT ===")
+                // console.log(this)
+                e.target.setStyle(singleStyle);
+            });
+
+            layer.bindTooltip(feature.properties.SIKUCHOSON);
+
+        }
+    }
+
+    var geoJson;
+
+    var initStyle = {
+        "color": "#afc3ff",
+        "weight": 3,
+        "opacity": 0.5
+    };
+
+    var singleStyle = {
+        "color": "#64ff82",
+        "weight": 1,
+        "opacity": 0.2
+    };
+
+    // $.getJSON('/geoJson/japan_county.geojson', function (r) {
+    //     geoJson = r;
+    //     // console.log(r)
+    //
+    //     L.geoJson(r, {
+    //         style: initStyle,
+    //         // pane: "pane250",
+    //         onEachFeature: onEachFeature_County
+    //     }).addTo(map);
+    //
+    //     $.getJSON('/geoJson/japan_single_seat_block.geojson', function (r) {
+    //         geoJson = r;
+    //         // console.log(r)
+    //
+    //         L.geoJson(r, {
+    //             style: singleStyle,
+    //             // pane: "pane450",
+    //             onEachFeature: onEachFeature_Single
+    //         }).addTo(map);
+    //     });
+    // });
+
+
+
+    $.getJSON('/geoJson/japan_county.geojson', function (r) {
+        geoJson = r;
+        // console.log(r)
+
+        L.geoJson(r, {
+            style: initStyle,
+            // pane: "pane250",
+            onEachFeature: onEachFeature_County
+        }).addTo(map);
+
+        $.getJSON('/geoJson/japan_ver81.geojson', function (r) {
+            geoJson = r;
+            // console.log(r)
+
+            L.geoJson(r, {
+                style: singleStyle,
+                // pane: "pane450",
+                onEachFeature: onEachFeature_Miniunits
+            }).addTo(map);
+        });
+    });
+
+    function onEachFeature_County(feature, layer) {
+        // does this feature have a property named popupContent?
+        // console.log(feature)
+
+        if (feature.properties && feature.properties.nam_ja) {
+            layer.bindPopup(feature.properties.nam_ja);
+            layer.bindTooltip(feature.properties.nam_ja, {
+                permanent: true,
+                direction: 'center',
+                opacity: 0.3,
+                className: 'myCSSClassa'
+            }).openTooltip();
+
+        }
+    }
+</script>
+<!--<script>-->
+<!--mapboxgl.accessToken = 'pk.eyJ1Ijoicjk5NTIxMzIwIiwiYSI6ImNrN3p1b2ljZDA5aGYzZnBnaXoxMWZoNmMifQ.-brOJZNzKPb-fohs8-4FJQ';-->
+<!--var map = new mapboxgl.Map({-->
+<!--container: 'mapid',-->
+<!--// style: 'mapbox://styles/mapbox/streets-v9',-->
+<!--style: 'mapbox://styles/mapbox/dark-v10',-->
+<!--zoom: 8,-->
+<!--minZoom: 6,-->
+<!--maxZoom: 16,-->
+<!--center: [139.4525704, 35.6619008],-->
+<!--// center: [-58.95141343,-->
+<!--//     -34.15333333],-->
+<!--locale: ["zh_TW"]-->
+<!--});-->
+
+<!--map.on('load', function() {-->
+<!--$.getJSON('/geoJson/japan_single_seat_block.geojson', function (geoData) {-->
+<!--console.log(geoData)-->
+
+<!--map.addSource('japan', {-->
+<!--type: 'geojson',-->
+<!--data: geoData,-->
+<!--// data: "https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_10m_ports.geojson"-->
+<!--});-->
+
+<!--console.log(map)-->
+
+<!--});-->
+<!--})-->
+
+
+<!--</script>-->
+</html>
