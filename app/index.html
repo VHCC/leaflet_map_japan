@@ -208,6 +208,8 @@
         }
     }
 
+    var lastLayer
+
     function onEachFeature_Miniunits(feature, layer) {
         // does this feature have a property named popupContent?
         // console.log(feature)
@@ -218,6 +220,9 @@
                 feature.properties.GUN +
                 feature.properties.SIKUCHOSON);
             layer.on('mouseover', function (e) {
+                if (lastLayer) {
+                    lastLayer.target.setStyle(singleStyle)
+                }
                 // console.log("=== OVER ===")
                 // console.log(this)
                 // this.openPopup();
@@ -236,16 +241,22 @@
                 e.target.setStyle(singleStyle);
             });
             layer.on('click', function (e) {
+                if (lastLayer) {
+                    lastLayer.target.setStyle(singleStyle)
+                }
                 // console.log("=== CLICK ===")
-                console.log(e)
+                // console.log(e)
+                e.target.setStyle(onMouseStyle);
                 getHiragana(e.target.feature.properties.SEIREI +
                     e.target.feature.properties.GUN +
                     e.target.feature.properties.SIKUCHOSON, e)
-                console.log(e.target.feature.properties)
+                // console.log(e.target.feature.properties)
                 speak(
                     e.target.feature.properties.SEIREI +
                     e.target.feature.properties.GUN +
                     e.target.feature.properties.SIKUCHOSON)
+
+                lastLayer = e;
             });
 
             layer.bindTooltip(
