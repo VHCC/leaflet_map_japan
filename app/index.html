@@ -306,7 +306,7 @@
 
         $.getJSON('/geoJson/japan_ver81.geojson', function (r) {
             geoJson = r;
-            console.log(r)
+            // console.log(r)
 
             L.geoJson(r, {
                 style: singleStyle,
@@ -369,13 +369,19 @@
         //     console.error('SpeechSynthesisUtterance.onerror');
         // }
 
+        var selectedOption_mobile = 'Kyoko';
         var selectedOption = 'Otoya';
+        for(i = 0; i < voices.length ; i++) {
+            if(voices[i].name === selectedOption_mobile) {
+                m_voice = voices[i];
+            }
+        }
         for(i = 0; i < voices.length ; i++) {
             if(voices[i].name === selectedOption) {
                 m_voice = voices[i];
             }
         }
-        // console.log(utterThis)
+        console.log(m_voice)
         // utterThis.volume = 5
         // utterThis.rate = 1
         // utterThis.pitch = 1
