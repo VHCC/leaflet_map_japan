@@ -39,6 +39,8 @@
     <script src='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.js'></script>
     <link href='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.css' rel='stylesheet'/>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.9.2/qs.min.js" integrity="sha256-TDxXjkAUay70ae/QJBEpGKkpVslXaHHayklIVglFRT4=" crossorigin="anonymous"></script>
+
 </head>
 <style>
 
@@ -208,10 +210,13 @@
 
     function onEachFeature_Miniunits(feature, layer) {
         // does this feature have a property named popupContent?
-        console.log(feature)
+        // console.log(feature)
 
         if (feature.properties && feature.properties.SIKUCHOSON) {
-            layer.bindPopup(feature.properties.SIKUCHOSON);
+            layer.bindPopup(
+                feature.properties.SEIREI +
+                feature.properties.GUN +
+                feature.properties.SIKUCHOSON);
             layer.on('mouseover', function (e) {
                 // console.log("=== OVER ===")
                 // console.log(this)
@@ -219,7 +224,7 @@
 
 
                 e.target.setStyle(onMouseStyle);
-
+                // speak(feature.properties.SIKUCHOSON)
                 // var popup = e.target._popup;
                 // if (popup) {
                 //     popup.setLatLng(e.latlng).openOn(map);
@@ -230,8 +235,23 @@
                 // console.log(this)
                 e.target.setStyle(singleStyle);
             });
+            layer.on('click', function (e) {
+                // console.log("=== CLICK ===")
+                console.log(e)
+                getHiragana(e.target.feature.properties.SEIREI +
+                    e.target.feature.properties.GUN +
+                    e.target.feature.properties.SIKUCHOSON, e)
+                console.log(e.target.feature.properties)
+                speak(
+                    e.target.feature.properties.SEIREI +
+                    e.target.feature.properties.GUN +
+                    e.target.feature.properties.SIKUCHOSON)
+            });
 
-            layer.bindTooltip(feature.properties.SIKUCHOSON);
+            layer.bindTooltip(
+                feature.properties.SEIREI +
+                feature.properties.GUN +
+                feature.properties.SIKUCHOSON);
 
         }
     }
@@ -286,7 +306,7 @@
 
         $.getJSON('/geoJson/japan_ver81.geojson', function (r) {
             geoJson = r;
-            // console.log(r)
+            console.log(r)
 
             L.geoJson(r, {
                 style: singleStyle,
@@ -311,37 +331,128 @@
 
         }
     }
+
+
+
+    var synth = window.speechSynthesis;
+
+    // var inputForm = document.querySelector('form');
+    // var inputTxt = document.querySelector('input');
+    // var voiceSelect = document.querySelector('select');
+
+    var voices = synth.getVoices();
+
+
+    function setVoices() {
+        return new Promise((resolve, reject) => {
+            let timer;
+            timer = setInterval(() => {
+                if(synth.getVoices().length !== 0) {
+                    resolve(synth.getVoices());
+                    clearInterval(timer);
+                }
+            }, 10);
+        })
+    }
+
+    var m_voice
+
+    setVoices().then(function (voices) {
+        // console.log(voices)
+
+        // var utterThis = new SpeechSynthesisUtterance("渋谷区");
+        //
+        // utterThis.onend = function (event) {
+        //     console.log('SpeechSynthesisUtterance.onend');
+        // }
+        // utterThis.onerror = function (event) {
+        //     console.error('SpeechSynthesisUtterance.onerror');
+        // }
+
+        var selectedOption = 'Otoya';
+        for(i = 0; i < voices.length ; i++) {
+            if(voices[i].name === selectedOption) {
+                m_voice = voices[i];
+            }
+        }
+        // console.log(utterThis)
+        // utterThis.volume = 5
+        // utterThis.rate = 1
+        // utterThis.pitch = 1
+        //
+        // synth.speak(utterThis);
+    });
+
+
+    function speak(text){
+        if (synth.speaking) {
+            console.error('speechSynthesis.speaking');
+            return;
+        }
+        if (text !== '') {
+            var utterThis = new SpeechSynthesisUtterance(text);
+            utterThis.onend = function (event) {
+                // console.log('SpeechSynthesisUtterance.onend');
+            }
+            utterThis.onerror = function (event) {
+                console.error('SpeechSynthesisUtterance.onerror');
+            }
+            // var selectedOption = voiceSelect.selectedOptions[0].getAttribute('data-name');
+            var selectedOption = 'Otoya';
+            utterThis.voice = m_voice
+            // console.log(utterThis)
+            utterThis.volume = 5
+            utterThis.rate = 1
+            utterThis.pitch = 1
+            synth.speak(utterThis);
+        }
+    }
+
+    var form = {txt: "鹿沼市", sn: "kana"};
+
+    var options = {
+        hostname: "www.ezlang.net",
+        port: 443,
+        path: "/cmn/tool_data.php",
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            // 'Content-Length': Buffer.byteLength(form),
+            'X-Requested-With': 'XMLHttpRequest',
+        },
+        form: form
+    };
+
+    var qs = Qs
+    const cors = 'https://cors-anywhere.herokuapp.com/';
+    const uri = 'https://www.ezlang.net/cmn/tool_data.php';
+    // console.log(qs.stringify(form));
+    // console.log(JSON.stringify(qs.stringify(form)));
+
+    function getHiragana (input, layer) {
+        fetch(cors+uri, {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                method:'POST',
+                // body:qs.stringify(form), // test
+                body:qs.stringify({
+                    txt: input,
+                    sn: "kana"
+                }),
+            })
+            .then(res => {
+                console.log(res)
+                return res.json();   // 使用 json() 可以得到 json 物件
+            }).then(result => {
+            console.log(result); // 得到 {name: "oxxo", age: 18, text: "你的名字是 oxxo，年紀 18 歲～"}
+            layer.target.bindPopup(result[1])
+        });
+    }
+
+    // console.log(cors+uri)
+
+
 </script>
-<!--<script>-->
-<!--mapboxgl.accessToken = 'pk.eyJ1Ijoicjk5NTIxMzIwIiwiYSI6ImNrN3p1b2ljZDA5aGYzZnBnaXoxMWZoNmMifQ.-brOJZNzKPb-fohs8-4FJQ';-->
-<!--var map = new mapboxgl.Map({-->
-<!--container: 'mapid',-->
-<!--// style: 'mapbox://styles/mapbox/streets-v9',-->
-<!--style: 'mapbox://styles/mapbox/dark-v10',-->
-<!--zoom: 8,-->
-<!--minZoom: 6,-->
-<!--maxZoom: 16,-->
-<!--center: [139.4525704, 35.6619008],-->
-<!--// center: [-58.95141343,-->
-<!--//     -34.15333333],-->
-<!--locale: ["zh_TW"]-->
-<!--});-->
-
-<!--map.on('load', function() {-->
-<!--$.getJSON('/geoJson/japan_single_seat_block.geojson', function (geoData) {-->
-<!--console.log(geoData)-->
-
-<!--map.addSource('japan', {-->
-<!--type: 'geojson',-->
-<!--data: geoData,-->
-<!--// data: "https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_10m_ports.geojson"-->
-<!--});-->
-
-<!--console.log(map)-->
-
-<!--});-->
-<!--})-->
-
-
-<!--</script>-->
 </html>
